@@ -58,7 +58,11 @@ function Login() {
 
     return (
         <div className='container'>
-            <h1>Login</h1>
+            <div className='auth-header'>
+                <img src='/logo.svg' alt='Expense Tracker Logo' className='auth-logo' />
+                <h1>Expense Tracker</h1>
+            </div>
+            <h2>Login</h2>
             <form onSubmit={handleLogin}>
                 <div>
                     <label htmlFor='email'>Email</label>

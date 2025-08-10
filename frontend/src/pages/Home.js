@@ -110,6 +110,31 @@ function Home() {
         }
     }
 
+    const updateExistingExpenses = async () => {
+        try {
+            const url = `${APIUrl}/expenses/update-dates`;
+            const headers = {
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                method: "PUT"
+            }
+            const response = await fetch(url, headers);
+            if (response.status === 403) {
+                localStorage.removeItem('token');
+                navigate('/login');
+                return
+            }
+            const result = await response.json();
+            handleSuccess(result?.message)
+            console.log('--result', result.data);
+            setExpenses(result.data);
+        } catch (err) {
+            handleError(err);
+        }
+    }
+
     useEffect(() => {
         fetchExpenses()
     }, [])
@@ -117,22 +142,51 @@ function Home() {
     return (
         <div>
             <div className='user-section'>
-                <h1>Welcome {loggedInUser}</h1>
-                <button onClick={handleLogout}>Logout</button>
+                <div className='header-content'>
+                    <div className='logo-section'>
+                        <img src='/logo.svg' alt='Expense Tracker Logo' className='app-logo' />
+                        <h1>Expense Tracker</h1>
+                    </div>
+                    <div className='user-info'>
+                        <h2>Welcome {loggedInUser}</h2>
+                        <button onClick={handleLogout}>Logout</button>
+                    </div>
+                </div>
             </div>
-            <ExpenseDetails
-                incomeAmt={incomeAmt}
-                expenseAmt={expenseAmt}
-            />
+            <div className='main-content'>
+                <ExpenseDetails
+                    incomeAmt={incomeAmt}
+                    expenseAmt={expenseAmt}
+                />
 
-            <ExpenseForm
-                addTransaction={addTransaction} />
+                <ExpenseForm
+                    addTransaction={addTransaction} />
 
-            <ExpenseTable
-                expenses={expenses}
-                deleteExpens={deleteExpens}
-            />
-            <ToastContainer />
+                {expenses.some(expense => !expense.date) && (
+                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                        <button 
+                            onClick={updateExistingExpenses}
+                            style={{
+                                background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+                                color: 'white',
+                                border: 'none',
+                                padding: '10px 20px',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: '600'
+                            }}
+                        >
+                            📅 Add Dates to Existing Expenses
+                        </button>
+                    </div>
+                )}
+                <ExpenseTable
+                    expenses={expenses}
+                    deleteExpens={deleteExpens}
+                />
+                <ToastContainer />
+            </div>
         </div>
     )
 }

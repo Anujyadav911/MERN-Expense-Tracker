@@ -5,7 +5,8 @@ function ExpenseForm({ addTransaction }) {
 
     const [expenseInfo, setExpenseInfo] = useState({
         amount: '',
-        text: ''
+        text: '',
+        date: new Date().toISOString().split('T')[0] // Set today's date as default
     })
 
     const handleChange = (e) => {
@@ -17,18 +18,17 @@ function ExpenseForm({ addTransaction }) {
 
     const addExpenses = (e) => {
         e.preventDefault();
-        const { amount, text } = expenseInfo;
-        if (!amount || !text) {
-            handleError('Please add Expense Details');
+        const { amount, text, date } = expenseInfo;
+        if (!amount || !text || !date) {
+            handleError('Please add Expense Details and Date');
             return;
         }
         addTransaction(expenseInfo);
-        setExpenseInfo({ amount: '', text: '' })
+        setExpenseInfo({ amount: '', text: '', date: new Date().toISOString().split('T')[0] })
     }
 
     return (
         <div className='container'>
-            <h1>Expense Tracker</h1>
             <form onSubmit={addExpenses}>
                 <div>
                     <label htmlFor='text'>Expense Detail</label>
@@ -48,6 +48,15 @@ function ExpenseForm({ addTransaction }) {
                         name='amount'
                         placeholder='Enter your Amount...'
                         value={expenseInfo.amount}
+                    />
+                </div>
+                <div>
+                    <label htmlFor='date'>Date</label>
+                    <input
+                        onChange={handleChange}
+                        type='date'
+                        name='date'
+                        value={expenseInfo.date}
                     />
                 </div>
                 <button type='submit'>Add Expense</button>

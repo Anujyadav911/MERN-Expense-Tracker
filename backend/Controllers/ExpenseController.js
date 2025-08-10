@@ -68,8 +68,40 @@ const deleteTransaction = async (req, res) => {
     }
 }
 
+const updateExistingExpenses = async (req, res) => {
+    const { _id } = req.user;
+    try {
+        // Update all expenses that don't have a date field
+        const userData = await UserModel.findByIdAndUpdate(
+            _id,
+            {
+                $set: {
+                    "expenses.$[elem].date": new Date().toISOString().split('T')[0]
+                }
+            },
+            {
+                arrayFilters: [{ "elem.date": { $exists: false } }],
+                new: true
+            }
+        )
+        res.status(200)
+            .json({
+                message: "Existing expenses updated with dates",
+                success: true,
+                data: userData?.expenses
+            })
+    } catch (err) {
+        return res.status(500).json({
+            message: "Something went wrong",
+            error: err,
+            success: false
+        })
+    }
+}
+
 module.exports = {
     addTransaction,
     getAllTransactions,
-    deleteTransaction
+    deleteTransaction,
+    updateExistingExpenses
 }

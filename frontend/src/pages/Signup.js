@@ -55,7 +55,11 @@ function Signup() {
     }
     return (
         <div className='container'>
-            <h1>Signup</h1>
+            <div className='auth-header'>
+                <img src='/logo.svg' alt='Expense Tracker Logo' className='auth-logo' />
+                <h1>Expense Tracker</h1>
+            </div>
+            <h2>Signup</h2>
             <form onSubmit={handleSignup}>
                 <div>
                     <label htmlFor='name'>Name</label>
